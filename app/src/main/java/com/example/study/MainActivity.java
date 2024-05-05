@@ -18,7 +18,7 @@ public class MainActivity extends AppCompatActivity {
     boolean inFirstInput = true;
     int resultNumber = 0;
     char operator = '+';
-
+    final String CLEAR_INPUT_TEXT = "0";
     TextView resultText;
 
     @Override
@@ -34,67 +34,71 @@ public class MainActivity extends AppCompatActivity {
 
         Button getButton = findViewById(view.getId());
 
-        switch (view.getId()) {
-            case R.id.all_clear_btn:
-                inFirstInput = true;
-                resultNumber = 0;
-                operator = '+';
-                resultText.setTextColor(0xFF000000);
-                resultText.setText(String.valueOf(resultNumber));
-                break;
-
-            case R.id.num_0_btn:
-            case R.id.num_1_btn:
-            case R.id.num_2_btn:
-            case R.id.num_3_btn:
-            case R.id.num_4_btn:
-            case R.id.num_5_btn:
-            case R.id.num_6_btn:
-            case R.id.num_7_btn:
-            case R.id.num_8_btn:
-            case R.id.num_9_btn:
-                if (inFirstInput) {
-                    resultText.setTextColor(0xFF000000);
-                    resultText.setText(getButton.getText().toString());
-                    inFirstInput = false;
-                } else {
-                    resultText.append(getButton.getText().toString());
-                }
-                break;
-
-            default:
-                Toast.makeText(getApplicationContext(),getButton.getText().toString() + "버튼이 클릭되었습니다.", Toast.LENGTH_LONG).show();
-                break;
+        if (view.getId() == R.id.all_clear_btn) {
+            resultNumber = 0;
+            operator = '+';
+            setClearText("0");
         }
 
-//        if (view.getId() == R.id.all_clear_btn) {
-//            inFirstInput = true;
-//            resultNumber = 0;
-//            operator = '+';
-//            resultText.setTextColor(0xFF000000);
-//            resultText.setText(String.valueOf(resultNumber));
-//        }
-//
-//
-//        if (view.getId() == R.id.num_0_btn
-//                || view.getId() == R.id.num_1_btn
-//                || view.getId() == R.id.num_2_btn
-//                || view.getId() == R.id.num_3_btn
-//                || view.getId() == R.id.num_4_btn
-//                || view.getId() == R.id.num_5_btn
-//                || view.getId() == R.id.num_6_btn
-//                || view.getId() == R.id.num_7_btn
-//                || view.getId() == R.id.num_8_btn
-//                || view.getId() == R.id.num_9_btn) {
-//
-//            if (inFirstInput) {
-//                resultText.setTextColor(0xFF000000);
-//                resultText.setText(getButton.getText().toString());
-//                inFirstInput = false;
-//            } else {
-//                resultText.append(getButton.getText().toString());
-//            }
-//        }
+        if (view.getId() == R.id.CE_btn) {
+            setClearText("0");
+        }
 
+        if (view.getId() == R.id.BS_btn) {
+            if(resultText.getText().toString().length() > 1) {
+                String getResultText = resultText.getText().toString();
+                String subString = getResultText.substring(0, getResultText.length() -1);
+                resultText.setText(subString);
+            } else {
+                setClearText("0");
+            }
+        }
+    }
+
+    public void numBtnClick(View view) {
+        Button getButton = findViewById(view.getId());
+
+        if (inFirstInput) {
+            resultText.setTextColor(0xFF000000);
+            resultText.setText(getButton.getText().toString());
+            inFirstInput = false;
+        } else {
+            resultText.append(getButton.getText().toString());
+        }
+    }
+
+    public void setClearText(String clearText) {
+        inFirstInput = true;
+        resultText.setTextColor(0xFF000000);
+        resultText.setText(clearText);
+    }
+
+    public int  intCal(int result, int lastNum, char op) {
+        if (op == '+') {
+            result += lastNum;
+        } else if (op == '-') {
+            result -= lastNum;
+        } else if (op == '/') {
+            result /= lastNum;
+        } else if (op == '*') {
+            result *= lastNum;
+        }
+        return result;
+    }
+
+    public void operatorClick(View view) {
+        Button getButton = findViewById(view.getId());
+
+        if(view.getId() == R.id.result_btn) {
+            resultNumber = intCal(resultNumber,  Integer.parseInt(resultText.getText().toString()), operator);
+            resultText.setText(String.valueOf(resultNumber));
+            inFirstInput = true;
+        } else {
+            int lastNum = Integer.parseInt(resultText.getText().toString());
+            resultNumber = intCal(resultNumber,  lastNum, operator);
+            operator = getButton.getText().toString().charAt(0);
+            resultText.setText(String.valueOf(resultNumber));
+            inFirstInput = true;
+        }
     }
 }
