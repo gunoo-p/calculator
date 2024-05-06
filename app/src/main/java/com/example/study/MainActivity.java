@@ -37,11 +37,11 @@ public class MainActivity extends AppCompatActivity {
         if (view.getId() == R.id.all_clear_btn) {
             resultNumber = 0;
             operator = '+';
-            setClearText("0");
+            setClearText(CLEAR_INPUT_TEXT);
         }
 
         if (view.getId() == R.id.CE_btn) {
-            setClearText("0");
+            setClearText(CLEAR_INPUT_TEXT);
         }
 
         if (view.getId() == R.id.BS_btn) {
@@ -50,7 +50,7 @@ public class MainActivity extends AppCompatActivity {
                 String subString = getResultText.substring(0, getResultText.length() -1);
                 resultText.setText(subString);
             } else {
-                setClearText("0");
+                setClearText(CLEAR_INPUT_TEXT);
             }
         }
     }
@@ -62,9 +62,14 @@ public class MainActivity extends AppCompatActivity {
             resultText.setTextColor(0xFF000000);
             resultText.setText(getButton.getText().toString());
             inFirstInput = false;
+        } else if(resultText.getText().toString().equals("0")){
+            Toast.makeText(getApplicationContext(), "0으로 시작하는 정수는 없습니다.", Toast.LENGTH_SHORT).show();
+            setClearText(CLEAR_INPUT_TEXT);
+            return;
         } else {
             resultText.append(getButton.getText().toString());
         }
+
     }
 
     public void setClearText(String clearText) {
@@ -90,15 +95,26 @@ public class MainActivity extends AppCompatActivity {
         Button getButton = findViewById(view.getId());
 
         if(view.getId() == R.id.result_btn) {
-            resultNumber = intCal(resultNumber,  Integer.parseInt(resultText.getText().toString()), operator);
-            resultText.setText(String.valueOf(resultNumber));
-            inFirstInput = true;
+            if (inFirstInput) {
+                resultNumber = 0;
+                operator = '+';
+                setClearText(CLEAR_INPUT_TEXT);
+            } else {
+                resultNumber = intCal(resultNumber,  Integer.parseInt(resultText.getText().toString()), operator);
+                resultText.setText(String.valueOf(resultNumber));
+                inFirstInput = true;
+            }
+
         } else {
-            int lastNum = Integer.parseInt(resultText.getText().toString());
-            resultNumber = intCal(resultNumber,  lastNum, operator);
-            operator = getButton.getText().toString().charAt(0);
-            resultText.setText(String.valueOf(resultNumber));
-            inFirstInput = true;
+            if(inFirstInput) {
+                operator = getButton.getText().toString().charAt(0);
+            }else {
+                int lastNum = Integer.parseInt(resultText.getText().toString());
+                resultNumber = intCal(resultNumber, lastNum, operator);
+                operator = getButton.getText().toString().charAt(0);
+                resultText.setText(String.valueOf(resultNumber));
+                inFirstInput = true;
+            }
         }
     }
 }
